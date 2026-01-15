@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Chat</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #121212;
+      color: white;
+      display: flex;
+      justify-content: center;
+    }
+    .chat {
+      width: 400px;
+      margin-top: 40px;
+    }
+    .messages {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    .user {
+      text-align: right;
+      color: #4caf50;
+      margin: 5px;
+    }
+    .ai {
+      text-align: left;
+      color: #03a9f4;
+      margin: 5px;
+    }
+    input {
+      width: 80%;
+      padding: 8px;
+    }
+    button {
+      width: 18%;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat">
+  <div class="messages" id="messages"></div>
+  <input id="input" placeholder="Type a message..." />
+  <button onclick="send()">Send</button>
+</div>
+
+<script>
+async function send() {
+  const input = document.getElementById("input");
+  const messages = document.getElementById("messages");
+
+  const userText = input.value;
+  if (!userText) return;
+
+  messages.innerHTML += `<div class="user">${userText}</div>`;
+  input.value = "";
+
+  const res = await fetch("http://localhost:3000/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userText })
+  });
+
+  const data = await res.json();
+  messages.innerHTML += `<div class="ai">${data.reply}</div>`;
+  messages.scrollTop = messages.scrollHeight;
+}
+</script>
+
+</body>
+</html>
