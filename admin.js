@@ -1,4 +1,4 @@
-const API = "PASTE_YOUR_GAS_URL";
+const API = "https://script.google.com/macros/s/AKfycbzVmQp-ahB7kx-1nybjlTdSQXuSUBjUV0j07xyo_UaNGTpgEHYkZEodixrcDRagaa5Xaw/exec";
 let brainrots = [];
 
 fetch(API).then(r=>r.json()).then(d=>{
