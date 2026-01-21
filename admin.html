@@ -1,0 +1,32 @@
+<h2>Admin Panel</h2>
+
+<input id="name" placeholder="Brainrot name">
+<input id="img" placeholder="Image URL">
+<input id="price" placeholder="Price">
+
+<button onclick="add()">Add Brainrot</button>
+
+<script>
+const API = "PASTE_YOUR_GAS_URL_HERE";
+const ADMIN = "Xama";
+
+let brainrots = [];
+
+fetch(API).then(r=>r.json()).then(d=>brainrots=d);
+
+function add(){
+ brainrots.push({
+  name: name.value,
+  img: img.value,
+  price: price.value
+ });
+
+ fetch(API,{
+  method:"POST",
+  body: JSON.stringify({
+   admin: ADMIN,
+   brainrots
+  })
+ });
+}
+</script>
