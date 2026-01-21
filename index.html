@@ -5,112 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Habibi Market</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:radial-gradient(circle at top,#2a0a4a,#0b0614);color:#f5f3ff;min-height:100vh;overflow-y:auto}
-header{display:flex;justify-content:space-between;align-items:center;padding:24px 48px;position:sticky;top:0;background:rgba(11,6,20,.9);backdrop-filter:blur(10px);z-index:10}
+body{background:radial-gradient(circle at top,#2a0a4a,#0b0614);color:#f5f3ff;min-height:100vh}
+header{
+ display:flex;justify-content:space-between;align-items:center;
+ padding:24px 48px;position:sticky;top:0;
+ background:rgba(11,6,20,.9);backdrop-filter:blur(10px);z-index:10
+}
 .logo{font-size:28px;font-weight:700;color:#b983ff}
-nav a{margin-left:24px;text-decoration:none;color:#ddd;font-weight:500;transition:.3s;cursor:pointer}
-nav a:hover{color:#b983ff}
+nav{display:flex;gap:16px}
+nav button{
+ padding:10px 18px;border-radius:10px;
+ border:1px solid #b983ff;background:transparent;
+ color:#b983ff;font-weight:600;cursor:pointer;transition:.3s
+}
+nav button.primary{background:#b983ff;color:#14001f}
+nav button:hover{transform:scale(1.05)}
 .container{padding:40px 48px}
-.title{font-size:42px;font-weight:700;margin-bottom:10px}
+.title{font-size:42px;font-weight:700}
 .subtitle{opacity:.7;margin-bottom:40px}
 .market{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
-.card{background:linear-gradient(180deg,#2a164f,#160a2b);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:.4s;box-shadow:0 20px 40px rgba(0,0,0,.45)}
-.card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(185,131,255,.25),transparent);opacity:0;transition:.4s}
-.card:hover::before{opacity:1}
-.card:hover{transform:translateY(-10px) scale(1.02)}
-.brainrot{height:140px;border-radius:14px;background:linear-gradient(135deg,#6f2cff,#b983ff);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;margin-bottom:16px}
-.name{font-size:20px;font-weight:600;margin-bottom:6px}
-.desc{font-size:13px;opacity:.7;margin-bottom:16px}
+
+.card{
+ background:linear-gradient(180deg,#2a164f,#160a2b);
+ border-radius:18px;padding:22px;
+ transition:.4s;box-shadow:0 20px 40px rgba(0,0,0,.45)
+}
+.card:hover{transform:translateY(-10px)}
+.brainrot{
+ height:140px;border-radius:14px;
+ background:linear-gradient(135deg,#6f2cff,#b983ff);
+ display:flex;align-items:center;justify-content:center;
+ font-size:22px;font-weight:600;margin-bottom:16px
+}
+.name{font-size:20px;font-weight:600}
+.desc{font-size:13px;opacity:.7;margin:8px 0 16px}
 .prices{display:flex;gap:10px}
-.btn{flex:1;padding:10px 0;border-radius:10px;border:none;font-weight:600;cursor:pointer;transition:.3s}
+.btn{
+ flex:1;padding:10px;border-radius:10px;
+ border:none;font-weight:600;cursor:pointer
+}
 .robux{background:#b983ff;color:#14001f}
 .money{background:transparent;border:1px solid #b983ff;color:#b983ff}
-.btn:hover{transform:scale(1.05)}
-section{padding:80px 48px}
-#about{background:linear-gradient(180deg,#14001f,#0b0614)}
-#about h2{font-size:32px;margin-bottom:20px;color:#b983ff}
-#about p{max-width:800px;opacity:.75;line-height:1.7}
-.auth{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:20}
-.auth-box{background:linear-gradient(180deg,#2a164f,#160a2b);padding:30px;border-radius:16px;width:320px;box-shadow:0 30px 60px rgba(0,0,0,.6)}
-.auth-box h3{text-align:center;margin-bottom:20px}
-.auth-box input{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:none}
-.auth-box button{width:100%;padding:10px;border-radius:8px;border:none;background:#b983ff;color:#14001f;font-weight:600;cursor:pointer}
-.auth-box button:hover{background:#a26bcc}
-.switch{text-align:center;margin-top:12px;font-size:13px;opacity:.7;cursor:pointer}
+.auth{
+ position:fixed;inset:0;background:rgba(0,0,0,.75);
+ display:none;align-items:center;justify-content:center;z-index:20
+}
+.auth-box{
+ width:420px;padding:40px;border-radius:20px;
+ background:linear-gradient(180deg,#2a164f,#160a2b);
+ box-shadow:0 40px 80px rgba(0,0,0,.7);
+ text-align:center;animation:pop .4s ease
+}
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.auth-box h2{margin-bottom:20px}
+.auth-box input{
+ width:100%;padding:12px;margin-bottom:14px;
+ border-radius:10px;border:none;font-size:15px
+}
+.auth-box button{
+ width:100%;padding:12px;border-radius:10px;
+ border:none;background:#b983ff;color:#14001f;
+ font-weight:700;font-size:15px;cursor:pointer
+}
+.switch{
+ margin-top:14px;font-size:13px;opacity:.7;cursor:pointer
+}
+.loader{
+ width:42px;height:42px;border-radius:50%;
+ border:4px solid rgba(255,255,255,.2);
+ border-top:4px solid #b983ff;
+ animation:spin 1s linear infinite;
+ margin:20px auto;display:none
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 footer{text-align:center;padding:30px;opacity:.5;font-size:13px}
 </style>
 </head>
+
 <body>
+
 <header>
 <div class="logo">Habibi Market</div>
-<nav>
-<a onclick="openAuth()" id="authBtn">Login</a>
-<a href="#about">About</a>
+<nav id="navBtns">
+<button onclick="openAuth('login')">Login</button>
+<button class="primary" onclick="openAuth('signup')">Sign Up</button>
 </nav>
 </header>
 
 <div class="container">
 <div class="title">Steal a Brainrot</div>
-<div class="subtitle">Buy Rare Brainrots using Robux or Money Via Cashapp Or Card</div>
+<div class="subtitle">Buy Rare Brainrots using Robux or Cash</div>
 <div class="market" id="market"></div>
 </div>
 
-<section id="about">
-<h2>About Habibi Market</h2>
-<p>Habibi Market is a Steal a Brainrot inspired marketplace experience. Purchase brainrots using Robux or Money Via Cashapp Or Credit Card And This Website is Created by Xama.</p>
-</section>
-
+<footer>Habibi Market © 2026</footer>
 <div class="auth" id="auth">
 <div class="auth-box">
-<h3 id="authTitle">Sign Up</h3>
-<input type="text" id="user" placeholder="Username">
-<input type="password" id="pass" placeholder="Password">
-<button onclick="submitAuth()">Continue</button>
-<div class="switch" onclick="switchMode()">Already have an account? Login</div>
+<h2 id="authTitle">Sign Up</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button id="authAction" onclick="submitAuth()">Create Account</button>
+<div class="loader" id="loader"></div>
+<div class="switch" onclick="toggleMode()">Already have an account? Login</div>
 </div>
 </div>
-
-<footer>Habibi Market © 2026</footer>
 
 <script>
-let mode='signup'
-const auth=document.getElementById('auth')
-const title=document.getElementById('authTitle')
-const btn=document.getElementById('authBtn')
+let mode="signup"
+const auth=document.getElementById("auth")
+const title=document.getElementById("authTitle")
+const btn=document.getElementById("authAction")
+const loader=document.getElementById("loader")
+const nav=document.getElementById("navBtns")
 
-if(localStorage.getItem('user')) btn.textContent='Logout'
+function openAuth(m){
+ mode=m
+ updateAuthUI()
+ auth.style.display="flex"
+}
 
-function openAuth(){
- if(localStorage.getItem('user')){localStorage.removeItem('user');btn.textContent='Login'}
- else auth.style.display='flex'
+function toggleMode(){
+ mode=mode==="signup"?"login":"signup"
+ updateAuthUI()
 }
-function switchMode(){
- mode=mode==='signup'?'login':'signup'
- title.textContent=mode==='signup'?'Sign Up':'Login'
- document.querySelector('.switch').textContent=mode==='signup'?'Already have an account? Login':'New here? Sign Up'
+
+function updateAuthUI(){
+ title.textContent=mode==="signup"?"Sign Up":"Login"
+ btn.textContent=mode==="signup"?"Create Account":"Login"
+ document.querySelector(".switch").textContent=
+ mode==="signup"?"Already have an account? Login":"New here? Sign Up"
 }
+
 function submitAuth(){
- const u=user.value,p=pass.value
- if(!u||!p) return
- if(mode==='signup'){localStorage.setItem('cred',JSON.stringify({u,p}));localStorage.setItem('user',u)}
- else{const c=JSON.parse(localStorage.getItem('cred')||'{}');if(c.u===u&&c.p===p)localStorage.setItem('user',u);else return}
- auth.style.display='none';btn.textContent='Logout'
+ loader.style.display="block"
+ btn.disabled=true
+
+ setTimeout(()=>{
+  const u=user.value,p=pass.value
+  if(!u||!p)return
+
+  if(mode==="signup"){
+   localStorage.setItem("cred",JSON.stringify({u,p}))
+   localStorage.setItem("user",u)
+  }else{
+   const c=JSON.parse(localStorage.getItem("cred")||"{}")
+   if(c.u!==u||c.p!==p)return
+   localStorage.setItem("user",u)
+  }
+
+  loader.style.display="none"
+  btn.disabled=false
+  auth.style.display="none"
+  nav.innerHTML=`<span style="opacity:.7">Welcome, ${u}</span>
+                 <button onclick="logout()">Logout</button>`
+ },1200)
 }
 
-const market=document.getElementById('market')
+function logout(){
+ localStorage.removeItem("user")
+ location.reload()
+}
+ const market=document.getElementById("market")
 for(let i=1;i<=20;i++){
- market.innerHTML+=`<div class="card"><div class="brainrot">Nil</div><div class="name">Nil Brainrot #${i}</div><div class="desc">Description for Nil brainrot</div><div class="prices"><button class="btn robux">Nil R$</button><button class="btn money">Nil</button></div></div>`
+ market.innerHTML+=`
+ <div class="card">
+  <div class="brainrot">Nil</div>
+  <div class="name">Nil Brainrot #${i}</div>
+  <div class="desc">Description for Nil brainrot</div>
+  <div class="prices">
+   <button class="btn robux">Nil R$</button>
+   <button class="btn money">Nil</button>
+  </div>
+ </div>`
+}
+if(localStorage.getItem("user")){
+ nav.innerHTML=`<span style="opacity:.7">
+ Welcome, ${localStorage.getItem("user")}
+ </span><button onclick="logout()">Logout</button>`
 }
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-------Coded By Xama Any Stolen Assets Will Be Claimed Via Google Copy Right
