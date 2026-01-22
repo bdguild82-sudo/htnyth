@@ -47,9 +47,8 @@ header{
 @keyframes slash{0%,40%{left:-120%}60%,100%{left:120%}}
 
 nav{display:flex;align-items:center;gap:20px}
-nav a{color:#ddd;text-decoration:none;cursor:pointer}
+nav a{color:#ddd;text-decoration:none;cursor:pointer;font-weight:600}
 nav a:hover{color:#b983ff}
-nav img{width:26px;cursor:pointer;display:none}
 
 /* ===== MARKET ===== */
 .container{padding:40px 48px}
@@ -133,9 +132,7 @@ footer{text-align:center;padding:30px;opacity:.5;font-size:13px}
 <header>
  <div class="logo">Habibi Market</div>
  <nav>
-  <img id="inboxBtn"
-   src="https://cdn4.iconfinder.com/data/icons/roundome-communication-line/32/message_call_mail_communication_Inbox-512.png"
-   onclick="openInbox()">
+  <a id="inboxBtn" style="display:none" onclick="openInbox()">Inbox</a>
   <a onclick="openAuth()" id="authBtn">Login</a>
  </nav>
 </header>
@@ -204,9 +201,11 @@ window.onload=()=>setTimeout(()=>{
 },2600);
 
 const XAMA="Xama";
+let selectedPass="",currentChat=null;
+
 const inboxBtn=document.getElementById("inboxBtn");
 const authBtn=document.getElementById("authBtn");
-let selectedPass="",currentChat=null;
+const alertBox=document.getElementById("alert");
 
 /* ===== AUTH ===== */
 if(localStorage.getItem("currentUser")){
@@ -249,12 +248,25 @@ items.forEach(i=>{
    <button class="btn robux" onclick="openConfirm('${i.robuxLink}')">${i.robux}</button>
    <button class="btn money">${i.money}</button>
   </div>
+  <button class="btn money" style="margin-top:10px" onclick="addToCart('${i.name}')">🛒 Add to Cart</button>
  </div>`;
 });
+
+/* ===== CART ===== */
+function addToCart(item){
+ let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+ cart.push(item);
+ localStorage.setItem("cart", JSON.stringify(cart));
+
+ alertBox.textContent="🛒 Added to cart!";
+ alertBox.classList.add("show");
+ setTimeout(()=>alertBox.classList.remove("show"),2000);
+}
 
 /* ===== BUY FLOW ===== */
 function openConfirm(link){
  if(!localStorage.getItem("currentUser")){
+  alertBox.textContent="⚠️ Please log in to purchase";
   alertBox.classList.add("show");
   setTimeout(()=>alertBox.classList.remove("show"),2000);
   return;
@@ -266,11 +278,18 @@ function openConfirm(link){
 function redirectToPass(){
  confirmBuy.style.display="none";
  window.open(selectedPass,"_blank");
+ localStorage.setItem("purchased","true");
  setTimeout(()=>afterBuy.style.display="flex",1200);
 }
 
 /* ===== INBOX SYSTEM ===== */
 function openInbox(){
+ if(!localStorage.getItem("purchased")){
+  alertBox.textContent="⚠️ You must purchase before messaging Xama";
+  alertBox.classList.add("show");
+  setTimeout(()=>alertBox.classList.remove("show"),2000);
+  return;
+ }
  inbox.style.display="flex";
  loadUsers();
 }
@@ -284,20 +303,22 @@ function openChatFromBuy(){
 function loadUsers(){
  const me=localStorage.getItem("currentUser");
  userList.innerHTML="";
- Object.keys(localStorage).forEach(k=>{
-  if(k.startsWith("chat_")){
-   const u=k.replace("chat_","");
-   if(me===XAMA || u===me){
-    const d=document.createElement("div");
-    d.textContent=u;
-    d.onclick=()=>openChat(u);
-    userList.appendChild(d);
-   }
+
+ // Always show Xama
+ const x=document.createElement("div");
+ x.textContent=XAMA;
+ x.onclick=()=>openChat(XAMA);
+ userList.appendChild(x);
+
+ // Show user's own chat
+ if(me!==XAMA){
+  if(!localStorage.getItem("chat_"+me)){
+   localStorage.setItem("chat_"+me,"[]");
   }
- });
- if(me!==XAMA && !localStorage.getItem("chat_"+me)){
-  localStorage.setItem("chat_"+me,"[]");
-  loadUsers();
+  const u=document.createElement("div");
+  u.textContent=me;
+  u.onclick=()=>openChat(me);
+  userList.appendChild(u);
  }
 }
 
@@ -331,7 +352,13 @@ function sendMsg(){
  loadChat();
 }
 
-const alertBox=document.getElementById("alert");
+/* ===== AUTO UPDATE CHAT ===== */
+setInterval(()=>{
+ if(currentChat){
+  loadChat();
+ }
+},1000);
+
 </script>
 
 </body>
