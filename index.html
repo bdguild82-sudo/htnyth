@@ -10,6 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
 body{background:radial-gradient(circle at top,#2a0a4a,#0b0614);color:#f5f3ff;min-height:100vh;overflow:hidden}
 
+/* ===== LOADER ===== */
 .loader-screen{
  position:fixed;inset:0;
  background:radial-gradient(circle at top,#2a0a4a,#0b0614);
@@ -28,6 +29,7 @@ body{background:radial-gradient(circle at top,#2a0a4a,#0b0614);color:#f5f3ff;min
 .tip{position:absolute;bottom:80px;font-size:14px;opacity:.85}
 .tip span{color:#b983ff;font-weight:600}
 
+/* ===== HEADER ===== */
 header{
  display:flex;justify-content:space-between;align-items:center;
  padding:24px 48px;background:rgba(11,6,20,.9);
@@ -37,6 +39,7 @@ header{
 nav a{margin-left:24px;color:#ddd;text-decoration:none;cursor:pointer}
 nav a:hover{color:#b983ff}
 
+/* ===== MARKET ===== */
 .container{padding:40px 48px}
 .title{font-size:42px;font-weight:700}
 .subtitle{opacity:.7;margin:10px 0 40px}
@@ -64,6 +67,7 @@ nav a:hover{color:#b983ff}
 .money{background:transparent;border:1px solid #b983ff;color:#b983ff}
 .btn:hover{transform:scale(1.05)}
 
+/* ===== AUTH ===== */
 .auth{
  position:fixed;inset:0;background:rgba(0,0,0,.7);
  display:none;align-items:center;justify-content:center;z-index:20
@@ -84,6 +88,7 @@ nav a:hover{color:#b983ff}
 .switch{text-align:center;font-size:13px;opacity:.7;margin-top:10px;cursor:pointer}
 .error{color:#ff7b7b;font-size:13px;text-align:center;margin-bottom:8px}
 
+/* ===== ALERT ===== */
 .alert{
  position:fixed;bottom:30px;left:50%;
  transform:translateX(-50%);
@@ -92,21 +97,19 @@ nav a:hover{color:#b983ff}
  pointer-events:none;transition:.4s;
  box-shadow:0 10px 30px rgba(0,0,0,.5)
 }
-.alert.show{opacity:1;animation:shake .4s}
-@keyframes shake{
- 0%{transform:translateX(-50%) translateX(0)}
- 25%{transform:translateX(-50%) translateX(-6px)}
- 50%{transform:translateX(-50%) translateX(6px)}
- 75%{transform:translateX(-50%) translateX(-6px)}
- 100%{transform:translateX(-50%) translateX(0)}
-}
+.alert.show{opacity:1}
 
+/* ===== AFTER BUY ===== */
+.after-buy{display:none}
+
+/* ===== FOOTER ===== */
 footer{text-align:center;padding:30px;opacity:.5;font-size:13px}
 </style>
 </head>
 
 <body>
 
+<!-- LOADER -->
 <div class="loader-screen" id="loader">
  <div class="ring"></div>
  <div class="tip">💡 Tip: <span>Buying with Money is cheaper than Robux</span></div>
@@ -127,6 +130,7 @@ footer{text-align:center;padding:30px;opacity:.5;font-size:13px}
 
 <footer>Habibi Market © 2026</footer>
 
+<!-- AUTH MODAL -->
 <div class="auth" id="auth">
  <div class="auth-box">
   <h3 id="authTitle">Sign Up</h3>
@@ -138,22 +142,48 @@ footer{text-align:center;padding:30px;opacity:.5;font-size:13px}
  </div>
 </div>
 
+<!-- AFTER BUY -->
+<div class="auth after-buy" id="afterBuy">
+ <div class="auth-box">
+  <h3>✅ Purchase Started</h3>
+  <p style="font-size:13px;opacity:.8;margin-bottom:14px">
+   After buying the Game Pass, message <b>Xama</b> to receive your item.
+  </p>
+  <a href="https://www.roblox.com/messages/compose"
+     target="_blank"
+     style="display:block;text-align:center;
+     background:#b983ff;color:#14001f;
+     padding:10px;border-radius:8px;
+     text-decoration:none;margin-bottom:10px">
+   💬 Message Xama
+  </a>
+  <a href="https://www.roblox.com/users/0/profile"
+     target="_blank"
+     style="display:block;text-align:center;
+     border:1px solid #b983ff;color:#b983ff;
+     padding:10px;border-radius:8px;
+     text-decoration:none">
+   👤 Open Xama’s Profile
+  </a>
+  <div class="switch" onclick="afterBuy.style.display='none'">Close</div>
+ </div>
+</div>
+
 <div class="alert" id="alert">⚠️ Please log in to purchase</div>
 
 <script>
+/* LOADER */
 window.onload=()=>setTimeout(()=>{
  loader.classList.add("hide");
  document.body.style.overflow="auto";
 },2600);
 
+/* AUTH */
 let mode="signup";
-const auth=document.getElementById("auth");
-const error=document.getElementById("authError");
+const users=JSON.parse(localStorage.getItem("users")||"{}");
 const btn=document.getElementById("authBtn");
 
-const users=JSON.parse(localStorage.getItem("users")||"{}");
-const current=localStorage.getItem("currentUser");
-if(current) btn.textContent="Logout";
+if(localStorage.getItem("currentUser")) btn.textContent="Logout";
 
 function openAuth(){
  if(localStorage.getItem("currentUser")){
@@ -165,7 +195,7 @@ function openAuth(){
 function switchMode(){
  mode=mode==="signup"?"login":"signup";
  authTitle.textContent=mode==="signup"?"Sign Up":"Login";
- error.textContent="";
+ authError.textContent="";
 }
 
 function submitAuth(){
@@ -173,12 +203,12 @@ function submitAuth(){
  if(!u||!p) return;
 
  if(mode==="signup"){
-  if(users[u]){error.textContent="Username already taken";return}
+  if(users[u]){authError.textContent="Username already taken";return}
   users[u]=p;
   localStorage.setItem("users",JSON.stringify(users));
  }
  if(mode==="login" && users[u]!==p){
-  error.textContent="Invalid login details";return
+  authError.textContent="Invalid login details";return;
  }
 
  localStorage.setItem("currentUser",u);
@@ -186,26 +216,18 @@ function submitAuth(){
  btn.textContent="Logout";
 }
 
+/* ITEMS */
 const items=[
  {
   name:"Money Money Puggy",
   desc:"Base - Tax+Service Fee Included",
   img:"https://tse3.mm.bing.net/th/id/OIP.aIWdrv89WltqgJZ3oYvFSwHaHa",
-  robux:"1399 R$",
+  robux:"950 R$",
   money:"$7.89",
-  robuxLink:"https://www.roblox.com/game-pass/1684574376/Money-Money-Puggy"
- },
- {
-  name:"Rainbow Nuclearo",
-  desc:"Rainbow - Tax+Service Fee Included",
-  img:"https://cdn-offer-photos.zeusx.com/7fa97f6d-07bc-4b9f-a75a-7b77bf9946d4.jpg",
-  robux:"3199 R$",
-  money:"$24.99",
   robuxLink:"https://www.roblox.com/game-pass/1684574376/Money-Money-Puggy"
  }
 ];
 
-const market=document.getElementById("market");
 items.forEach(i=>{
  market.innerHTML+=`
  <div class="card">
@@ -213,18 +235,30 @@ items.forEach(i=>{
   <div class="name">${i.name}</div>
   <div class="desc">${i.desc}</div>
   <div class="prices">
-   <button class="btn robux" onclick="buy()"> ${i.robux}</button>
-   <button class="btn money" onclick="buy()"> ${i.money}</button>
+   <button class="btn robux" onclick="buyRobux('${i.robuxLink}')">${i.robux}</button>
+   <button class="btn money" onclick="buyMoney()">${i.money}</button>
   </div>
  </div>`;
 });
 
-function buy(){
+/* BUY */
+function buyRobux(link){
+ if(!localStorage.getItem("currentUser")){
+  alertBox.classList.add("show");
+  setTimeout(()=>alertBox.classList.remove("show"),2000);
+  return;
+ }
+ window.open(link,"_blank");
+ afterBuy.style.display="flex";
+}
+
+function buyMoney(){
  if(!localStorage.getItem("currentUser")){
   alertBox.classList.add("show");
   setTimeout(()=>alertBox.classList.remove("show"),2000);
  }
 }
+
 const alertBox=document.getElementById("alert");
 </script>
 
