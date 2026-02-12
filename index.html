@@ -1,17 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
 <title>Habibi Market</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="style.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{
+  background:radial-gradient(circle at top,#2a0a4a,#0b0614);
+  color:#f5f3ff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden
+}
+.loader-screen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at top,#2a0a4a,#0b0614);
+  z-index:9999;
+  transition:.8s
+}
+.loader-screen.hide{opacity:0;visibility:hidden}
+.ring{
+  width:120px;height:120px;border-radius:50%;
+  border:6px solid rgba(185,131,255,.2);
+  border-top:6px solid #b983ff;
+  animation:spin 1.2s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loader-tip{
+  font-size:14px;
+  color:#d7c6ff;
+  opacity:.85;
+  text-shadow:0 0 12px #b983ff;
+  animation:fadeTip .25s ease
+}
+@keyframes fadeTip{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:.85;transform:translateY(0)}
+}
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:24px 48px;
+  background:rgba(11,6,20,.9);
+  backdrop-filter:blur(10px)
+}
+.logo{
+  font-size:28px;font-weight:700;color:#b983ff;
+  position:relative;overflow:hidden
+}
+.logo::after{
+  content:"";
+  position:absolute;
+  top:-30%;left:-120%;
+  width:35%;height:180%;
+  background:linear-gradient(120deg,transparent,#ffffffcc,transparent);
+  animation:slash .9s infinite
+}
+@keyframes slash{to{left:160%}}
+
+nav{display:flex;gap:20px}
+nav a{cursor:pointer;font-weight:600;color:#ddd}
+nav a:hover{color:#b983ff}
+.container{padding:40px 48px;flex:1}
+.market{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:28px
+}
+.card{
+  background:linear-gradient(180deg,#2a164f,#160a2b);
+  border-radius:18px;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.08);
+  transition:.4s
+}
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 12px 30px rgba(185,131,255,.3)
+}
+.image-box{height:150px;border-radius:14px;overflow:hidden}
+.image-box img{width:100%;height:100%;object-fit:cover}
+.name{margin-top:10px;font-weight:600}
+.seller{font-size:12px;opacity:.7;margin:4px 0}
+.buy-box{
+  margin-top:12px;background:#12081f;
+  border-radius:12px;padding:12px;
+  animation:pop .3s ease
+}
+.price{font-size:22px;font-weight:700;color:#b983ff}
+.buy-btn{
+  margin-top:10px;width:100%;padding:10px;
+  border:none;border-radius:10px;
+  background:#b983ff;color:#14001f;
+  font-weight:700;cursor:pointer
+}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;
+  z-index:99
+}
+.box{
+  background:linear-gradient(180deg,#2a164f,#160a2b);
+  padding:26px;border-radius:16px;width:360px;
+  animation:pop .35s ease
+}
+.box input{
+  width:100%;padding:10px;margin-bottom:10px;
+  border-radius:8px;border:none
+}
+.box button{
+  width:100%;padding:10px;border:none;
+  border-radius:8px;background:#b983ff;
+  font-weight:600;cursor:pointer
+}
+.switch{text-align:center;font-size:13px;opacity:.7;margin-top:10px;cursor:pointer}
+.checkout-box{
+  background:#12081f;border-radius:10px;
+  padding:10px;margin-bottom:8px;
+  display:flex;justify-content:space-between;
+  font-size:14px
+}
+.alert{
+  position:fixed;bottom:30px;left:50%;
+  transform:translateX(-50%);
+  padding:14px 22px;border-radius:12px;
+  background:#2a164f;opacity:0;
+  transition:.4s;pointer-events:none
+}
+.alert.show{opacity:1}
+#searchBox{
+  width:300px;margin-bottom:30px;
+  padding:12px 15px;border-radius:12px;
+  border:none;background:#1b0f38;color:#ddd;
+  box-shadow:0 0 12px #b983ff88
+}
+.banner-background{
+  position:relative;max-width:800px;height:140px;
+  margin:40px auto;background:#3b1b70;
+  border-radius:18px;box-shadow:0 0 25px #a77fff88
+}
+.banner-background::before{
+  content:"";position:absolute;inset:0;
+  background:rgba(45,16,92,.6)
+}
+.banner-text{
+  position:relative;height:100%;
+  display:flex;justify-content:center;align-items:center;
+  gap:40px;font-weight:900;font-size:2.2rem;
+  color:#e0d4ff
+}
+
+footer{text-align:center;padding:50px 20px 20px;opacity:.5;font-size:13px}
+</style>
 </head>
 
 <body>
+<div class="loader-screen" id="loader">
+  <div class="ring"></div>
+  <div class="loader-tip" id="loaderTip">Loading Habibi Market…</div>
+</div>
 
-<div class="market" id="market"></div>
+<header>
+  <div class="logo">Habibi Market</div>
+  <nav>
+    <a onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</a>
+    <a id="authBtn" onclick="openAuth()">Login</a>
+  </nav>
+</header>
 
-<script src="script.js"></script>
+<div class="container">
+  <input id="searchBox" placeholder="Search Items..." oninput="filterMarket()" />
+
+  <div class="banner-background">
+    <div class="banner-text">
+      <span>🛒 Buy</span>
+      <span>⏳ Wait</span>
+      <span>📦 Receive</span>
+    </div>
+  </div>
+
+  <div class="market" id="market"></div>
+</div>
+
+<footer>Habibi Market © 2026</footer>
+<div class="modal" id="authModal">
+  <div class="box">
+    <h3>Login</h3>
+    <input id="email" placeholder="Email" />
+    <input id="password" placeholder="Password" type="password" />
+    <button onclick="login()">Continue</button>
+    <div class="switch" onclick="authModal.style.display='none'">Cancel</div>
+  </div>
+</div>
+<div class="modal" id="cartModal">
+  <div class="box">
+    <h3>Checkout</h3>
+    <div id="cartItems"></div>
+    <button onclick="fakeCheckout()">Confirm</button>
+    <div class="switch" onclick="cartModal.style.display='none'">Close</div>
+  </div>
+</div>
+
+<div class="alert" id="alert"></div>
+
+<script>
+const tips = [
+  "♟️ Chess Boy Tuk Tuk Tucker",
+  "💸 Using Payment Such As Paypal/Cashapp Is 30% Cheaper",
+  "⚡ Limited stock · Fast checkout wins",
+  "📦 Buy · Wait · Receive",
+  "🔒 Jew Boy Temu"
+];
+let ti = 0;
+setInterval(() => {
+  loaderTip.textContent = tips[++ti % tips.length];
+}, 450);
+window.onload = () => setTimeout(() => {
+  loader.classList.add("hide");
+  document.body.style.overflow = "auto";
+  if (localStorage.getItem("user")) {
+    const u = localStorage.getItem("user");
+    authBtn.textContent = `Logout (${u.split("@")[0]})`;
+    authBtn.onclick = logout;
+  }
+  updateCartCount();
+}, 2000);
+function openAuth(){authModal.style.display="flex"}
+function login(){
+  if(!email.value.includes("@")) return showAlert("❌ Invalid email");
+  if(password.value.length<4) return showAlert("❌ Password too short");
+  localStorage.setItem("user",email.value);
+  authModal.style.display="none";
+  authBtn.textContent=`Logout (${email.value.split("@")[0]})`;
+  authBtn.onclick=logout;
+  updateCartCount();
+  showAlert("✅ Logged in");
+}
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
+const items=[
+ {name:"Money Money Puggy",seller:"Xama",img:"https://tse3.mm.bing.net/th/id/OIP.aIWdrv89WltqgJZ3oYvFSwHaHa",price:7.89},
+ {name:"Baby Temu Slave",seller:"Xama",img:"https://i.imgur.com/brainrot.jpg",price:0.000069}
+];
+function renderMarket(l){
+ market.innerHTML="";
+ l.forEach(i=>{
+  market.innerHTML+=`
+  <div class="card">
+   <div class="image-box"><img src="${i.img}"></div>
+   <div class="name">${i.name}</div>
+   <div class="seller">Seller: ${i.seller}</div>
+   <div class="buy-box">
+    <div class="price">$${i.price}</div>
+    <button class="buy-btn" onclick="addToCart('${i.name}',${i.price})">Add</button>
+   </div>
+  </div>`;
+ });
+}
+renderMarket(items);
+function filterMarket(){
+ renderMarket(items.filter(i=>i.name.toLowerCase().includes(searchBox.value.toLowerCase())));
+}
+function cartKey(){return"cart_"+localStorage.getItem("user")}
+function addToCart(n,p){
+ if(!localStorage.getItem("user")){showAlert("Login first");openAuth();return}
+ let c=JSON.parse(localStorage.getItem(cartKey())||"[]");
+ c.push({n,p});
+ localStorage.setItem(cartKey(),JSON.stringify(c));
+ updateCartCount();
+ showAlert("🛒 Added");
+}
+function updateCartCount(){
+ if(!localStorage.getItem("user")){cartCount.textContent=0;return}
+ cartCount.textContent=JSON.parse(localStorage.getItem(cartKey())||"[]").length;
+}
+function openCart(){
+ if(!localStorage.getItem("user")){showAlert("Login first");openAuth();return}
+ cartModal.style.display="flex";
+ let c=JSON.parse(localStorage.getItem(cartKey())||"[]");
+ cartItems.innerHTML="";
+ c.forEach(i=>cartItems.innerHTML+=`
+  <div class="checkout-box"><span>${i.n}</span><b>$${i.p}</b></div>`);
+}
+function fakeCheckout(){
+ cartModal.style.display="none";
+ showAlert(Math.random()>.5?"✅ Purchase successful":"❌ Payment failed");
+ localStorage.removeItem(cartKey());
+ updateCartCount();
+}
+function showAlert(t){
+ alert.textContent=t;
+ alert.classList.add("show");
+ setTimeout(()=>alert.classList.remove("show"),3000);
+}
+</script>
 </body>
 </html>
