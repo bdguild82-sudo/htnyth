@@ -137,7 +137,8 @@ nav a:hover{color:#b983ff}
   transform:translateX(-50%);
   padding:14px 22px;border-radius:12px;
   background:#2a164f;opacity:0;
-  transition:.4s;pointer-events:none
+  transition:.4s;pointer-events:none;
+  user-select:none;
 }
 .alert.show{opacity:1}
 #searchBox{
@@ -161,8 +162,64 @@ nav a:hover{color:#b983ff}
   gap:40px;font-weight:900;font-size:2.2rem;
   color:#e0d4ff
 }
-
 footer{text-align:center;padding:50px 20px 20px;opacity:.5;font-size:13px}
+
+/* Credits button styles */
+#creditsBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #b983ff;
+  color: #14001f;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 12px #b983ffcc;
+  transition: box-shadow 0.3s ease;
+  z-index: 10000;
+  user-select:none;
+}
+#creditsBtn:hover {
+  box-shadow: 0 0 20px 6px #b983ffdd;
+}
+#creditsModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  user-select:none;
+}
+#creditsBox {
+  background: linear-gradient(180deg,#2a164f,#160a2b);
+  padding: 20px 30px;
+  border-radius: 22px;
+  max-width: 320px;
+  color: #e0d4ff;
+  box-shadow: 0 0 30px #b983ff88;
+  font-weight: 600;
+  text-align: center;
+  user-select:text;
+}
+#creditsClose {
+  margin-top: 15px;
+  background: #b983ff;
+  border: none;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #14001f;
+  box-shadow: 0 0 10px #b983ffcc;
+  transition: box-shadow 0.3s ease;
+  user-select:none;
+}
+#creditsClose:hover {
+  box-shadow: 0 0 20px 6px #b983ffdd;
+}
 </style>
 </head>
 
@@ -195,6 +252,7 @@ footer{text-align:center;padding:50px 20px 20px;opacity:.5;font-size:13px}
 </div>
 
 <footer>Habibi Market © 2026</footer>
+
 <div class="modal" id="authModal">
   <div class="box">
     <h3>Login</h3>
@@ -204,6 +262,7 @@ footer{text-align:center;padding:50px 20px 20px;opacity:.5;font-size:13px}
     <div class="switch" onclick="authModal.style.display='none'">Cancel</div>
   </div>
 </div>
+
 <div class="modal" id="cartModal">
   <div class="box">
     <h3>Checkout</h3>
@@ -215,18 +274,42 @@ footer{text-align:center;padding:50px 20px 20px;opacity:.5;font-size:13px}
 
 <div class="alert" id="alert"></div>
 
+<button id="creditsBtn">Credits</button>
+<div id="creditsModal">
+  <div id="creditsBox">
+    Credits<br>
+    Site builder: <span id="creditSiteBuilder" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Owner Selkler</span><br>
+    Co Owner: <span id="creditCoOwner" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Africa Boy : Temu</span><br>
+    <button id="creditsClose">Close</button>
+  </div>
+</div>
+
 <script>
+const loaderTip = document.getElementById("loaderTip");
+const loader = document.getElementById("loader");
+const authBtn = document.getElementById("authBtn");
+const authModal = document.getElementById("authModal");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const market = document.getElementById("market");
+const searchBox = document.getElementById("searchBox");
+const cartCount = document.getElementById("cartCount");
+const cartModal = document.getElementById("cartModal");
+const cartItems = document.getElementById("cartItems");
+const alert = document.getElementById("alert");
+
 const tips = [
   "♟️ Chess Boy Tuk Tuk Tucker",
   "💸 Using Payment Such As Paypal/Cashapp Is 30% Cheaper",
-  "⚡ Limited stock · Fast Delivery",
+  "⚡ Limited stock · Fast checkout ",
   "📦 Buy · Wait · Receive",
-  "🔒 Secured Payments Methood"
+  "🔒 Sus Boy Temu"
 ];
 let ti = 0;
 setInterval(() => {
   loaderTip.textContent = tips[++ti % tips.length];
 }, 450);
+
 window.onload = () =>
   setTimeout(() => {
     loader.classList.add("hide");
@@ -238,9 +321,11 @@ window.onload = () =>
     }
     updateCartCount();
   }, 2000);
+
 function openAuth() {
   authModal.style.display = "flex";
 }
+
 function login() {
   if (!email.value.includes("@")) return showAlert("❌ Invalid email");
   if (password.value.length < 4) return showAlert("❌ Password too short");
@@ -251,15 +336,17 @@ function login() {
   updateCartCount();
   showAlert("✅ Logged in");
 }
+
 function logout() {
   localStorage.clear();
   location.reload();
 }
+
 const items = [
   {
-    name: "Xama",
+    name: "Money Money Puggy",
     seller: "Xama",
-    img: "https://tse3.mm.bing.net/th/id/ytjrjhy546tr6u45rt12",
+    img: "https://tse3.mm.bing.net/th/id/OIP.aIWdrv89WltqgJZ3oYvFSwHaHa",
     price: 7.89
   },
   {
@@ -269,9 +356,10 @@ const items = [
     price: 0.000069
   }
 ];
-function renderMarket(l) {
+
+function renderMarket(list) {
   market.innerHTML = "";
-  l.forEach((i) => {
+  list.forEach((i) => {
     market.innerHTML += `
   <div class="card">
    <div class="image-box"><img src="${i.img}"></div>
@@ -285,6 +373,7 @@ function renderMarket(l) {
   });
 }
 renderMarket(items);
+
 function filterMarket() {
   renderMarket(
     items.filter((i) =>
@@ -292,29 +381,32 @@ function filterMarket() {
     )
   );
 }
+
 function cartKey() {
   return "cart_" + localStorage.getItem("user");
 }
-function addToCart(n, p) {
+
+function addToCart(name, price) {
   if (!localStorage.getItem("user")) {
     showAlert("Login first");
     openAuth();
     return;
   }
   let c = JSON.parse(localStorage.getItem(cartKey()) || "[]");
-  c.push({ n, p });
+  c.push({ n: name, p: price });
   localStorage.setItem(cartKey(), JSON.stringify(c));
   updateCartCount();
-  showAlert("🛒 Added");
+  showAlert("🛒 Added To Cart");
 }
+
 function updateCartCount() {
   if (!localStorage.getItem("user")) {
     cartCount.textContent = 0;
     return;
   }
-  cartCount.textContent = JSON.parse(localStorage.getItem(cartKey()) || "[]")
-    .length;
+  cartCount.textContent = JSON.parse(localStorage.getItem(cartKey()) || "[]").length;
 }
+
 function openCart() {
   if (!localStorage.getItem("user")) {
     showAlert("Login first");
@@ -324,99 +416,34 @@ function openCart() {
   cartModal.style.display = "flex";
   let c = JSON.parse(localStorage.getItem(cartKey()) || "[]");
   cartItems.innerHTML = "";
-  c.forEach(
-    (i) =>
-      (cartItems.innerHTML += `<div class="checkout-box"><span>${i.n}</span><b>$${i.p}</b></div>`)
-  );
+  c.forEach((i) => {
+    cartItems.innerHTML += `<div class="checkout-box"><span>${i.n}</span><b>$${i.p}</b></div>`;
+  });
 }
+
 function fakeCheckout() {
   cartModal.style.display = "none";
   showAlert(Math.random() > 0.5 ? "✅ Purchase successful" : "❌ Payment failed");
   localStorage.removeItem(cartKey());
   updateCartCount();
 }
-function showAlert(t) {
-  alert.textContent = t;
+
+function showAlert(text) {
+  alert.textContent = text;
   alert.classList.add("show");
   setTimeout(() => alert.classList.remove("show"), 3000);
 }
-const creditsBtn = document.createElement("button");
-creditsBtn.id = "creditsBtn";
-creditsBtn.textContent = "Credits";
-document.body.appendChild(creditsBtn);
-const creditsModal = document.createElement("div");
-creditsModal.id = "creditsModal";
-creditsModal.style.position = "fixed";
-creditsModal.style.inset = "0";
-creditsModal.style.background = "rgba(0,0,0,0.7)";
-creditsModal.style.display = "none";
-creditsModal.style.alignItems = "center";
-creditsModal.style.justifyContent = "center";
-creditsModal.style.zIndex = "10001";
-creditsModal.style.userSelect = "none";
-const creditsBox = document.createElement("div");
-creditsBox.id = "creditsBox";
-creditsBox.style.background = "linear-gradient(180deg,#2a164f,#160a2b)";
-creditsBox.style.padding = "20px 30px";
-creditsBox.style.borderRadius = "22px";
-creditsBox.style.maxWidth = "320px";
-creditsBox.style.color = "#e0d4ff";
-creditsBox.style.boxShadow = "0 0 30px #b983ff88";
-creditsBox.style.fontWeight = "600";
-creditsBox.style.textAlign = "center";
-creditsBox.style.userSelect = "text";
-creditsBox.innerHTML = `
-  Credits<br>
-  Site builder: <span id="creditSiteBuilder" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Xama</span><br>
-  Owner: <span id="creditCoOwner" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Jey/Nico</span><br>
-`;
-const creditsClose = document.createElement("button");
-creditsClose.id = "creditsClose";
-creditsClose.textContent = "Close";
-creditsClose.style.marginTop = "15px";
-creditsClose.style.background = "#b983ff";
-creditsClose.style.border = "none";
-creditsClose.style.borderRadius = "16px";
-creditsClose.style.padding = "8px 16px";
-creditsClose.style.fontWeight = "700";
-creditsClose.style.cursor = "pointer";
-creditsClose.style.color = "#14001f";
-creditsClose.style.boxShadow = "0 0 10px #b983ffcc";
-creditsClose.style.transition = "box-shadow 0.3s ease";
-creditsClose.onmouseenter = () => {
-  creditsClose.style.boxShadow = "0 0 20px 6px #b983ffdd";
-};
-creditsClose.onmouseleave = () => {
-  creditsClose.style.boxShadow = "0 0 10px #b983ffcc";
+
+const creditsBtn = document.getElementById("creditsBtn");
+const creditsModal = document.getElementById("creditsModal");
+const creditsClose = document.getElementById("creditsClose");
+
+creditsBtn.onclick = () => {
+  creditsModal.style.display = "flex";
 };
 creditsClose.onclick = () => {
   creditsModal.style.display = "none";
 };
-creditsBox.appendChild(creditsClose);
-creditsModal.appendChild(creditsBox);
-document.body.appendChild(creditsModal);
-creditsBtn.style.position = "fixed";
-creditsBtn.style.bottom = "20px";
-creditsBtn.style.right = "20px";
-creditsBtn.style.background = "#b983ff";
-creditsBtn.style.color = "#14001f";
-creditsBtn.style.padding = "10px 20px";
-creditsBtn.style.borderRadius = "24px";
-creditsBtn.style.fontWeight = "700";
-creditsBtn.style.cursor = "pointer";
-creditsBtn.style.boxShadow = "0 0 12px #b983ffcc";
-creditsBtn.style.transition = "box-shadow 0.3s ease";
-creditsBtn.style.zIndex = "10000";
-creditsBtn.onmouseenter = () => {
-  creditsBtn.style.boxShadow = "0 0 20px 6px #b983ffdd";
-};
-creditsBtn.onmouseleave = () => {
-  creditsBtn.style.boxShadow = "0 0 12px #b983ffcc";
-};
-creditsBtn.onclick = () => {
-  creditsModal.style.display = "flex";
-};
-
 </script>
 </body>
 </html>
