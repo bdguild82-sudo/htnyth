@@ -227,39 +227,52 @@ let ti = 0;
 setInterval(() => {
   loaderTip.textContent = tips[++ti % tips.length];
 }, 450);
-window.onload = () => setTimeout(() => {
-  loader.classList.add("hide");
-  document.body.style.overflow = "auto";
-  if (localStorage.getItem("user")) {
-    const u = localStorage.getItem("user");
-    authBtn.textContent = `Logout (${u.split("@")[0]})`;
-    authBtn.onclick = logout;
-  }
-  updateCartCount();
-}, 2000);
-function openAuth(){authModal.style.display="flex"}
-function login(){
-  if(!email.value.includes("@")) return showAlert("❌ Invalid email");
-  if(password.value.length<4) return showAlert("❌ Password too short");
-  localStorage.setItem("user",email.value);
-  authModal.style.display="none";
-  authBtn.textContent=`Logout (${email.value.split("@")[0]})`;
-  authBtn.onclick=logout;
+window.onload = () =>
+  setTimeout(() => {
+    loader.classList.add("hide");
+    document.body.style.overflow = "auto";
+    if (localStorage.getItem("user")) {
+      const u = localStorage.getItem("user");
+      authBtn.textContent = `Logout (${u.split("@")[0]})`;
+      authBtn.onclick = logout;
+    }
+    updateCartCount();
+  }, 2000);
+function openAuth() {
+  authModal.style.display = "flex";
+}
+function login() {
+  if (!email.value.includes("@")) return showAlert("❌ Invalid email");
+  if (password.value.length < 4) return showAlert("❌ Password too short");
+  localStorage.setItem("user", email.value);
+  authModal.style.display = "none";
+  authBtn.textContent = `Logout (${email.value.split("@")[0]})`;
+  authBtn.onclick = logout;
   updateCartCount();
   showAlert("✅ Logged in");
 }
-function logout(){
+function logout() {
   localStorage.clear();
   location.reload();
 }
-const items=[
- {name:"Money Money Puggy",seller:"Xama",img:"https://tse3.mm.bing.net/th/id/OIP.aIWdrv89WltqgJZ3oYvFSwHaHa",price:7.89},
- {name:"Baby Temu Slave",seller:"Xama",img:"https://i.imgur.com/brainrot.jpg",price:0.000069}
+const items = [
+  {
+    name: "Xama",
+    seller: "Xama",
+    img: "https://tse3.mm.bing.net/th/id/ytjrjhy546tr6u45rt12",
+    price: 7.89
+  },
+  {
+    name: "Xama",
+    seller: "Xama",
+    img: "https://i.imgur.com/brainrot.jpg",
+    price: 0.000069
+  }
 ];
-function renderMarket(l){
- market.innerHTML="";
- l.forEach(i=>{
-  market.innerHTML+=`
+function renderMarket(l) {
+  market.innerHTML = "";
+  l.forEach((i) => {
+    market.innerHTML += `
   <div class="card">
    <div class="image-box"><img src="${i.img}"></div>
    <div class="name">${i.name}</div>
@@ -269,44 +282,141 @@ function renderMarket(l){
     <button class="buy-btn" onclick="addToCart('${i.name}',${i.price})">Add</button>
    </div>
   </div>`;
- });
+  });
 }
 renderMarket(items);
-function filterMarket(){
- renderMarket(items.filter(i=>i.name.toLowerCase().includes(searchBox.value.toLowerCase())));
+function filterMarket() {
+  renderMarket(
+    items.filter((i) =>
+      i.name.toLowerCase().includes(searchBox.value.toLowerCase())
+    )
+  );
 }
-function cartKey(){return"cart_"+localStorage.getItem("user")}
-function addToCart(n,p){
- if(!localStorage.getItem("user")){showAlert("Login first");openAuth();return}
- let c=JSON.parse(localStorage.getItem(cartKey())||"[]");
- c.push({n,p});
- localStorage.setItem(cartKey(),JSON.stringify(c));
- updateCartCount();
- showAlert("🛒 Added");
+function cartKey() {
+  return "cart_" + localStorage.getItem("user");
 }
-function updateCartCount(){
- if(!localStorage.getItem("user")){cartCount.textContent=0;return}
- cartCount.textContent=JSON.parse(localStorage.getItem(cartKey())||"[]").length;
+function addToCart(n, p) {
+  if (!localStorage.getItem("user")) {
+    showAlert("Login first");
+    openAuth();
+    return;
+  }
+  let c = JSON.parse(localStorage.getItem(cartKey()) || "[]");
+  c.push({ n, p });
+  localStorage.setItem(cartKey(), JSON.stringify(c));
+  updateCartCount();
+  showAlert("🛒 Added");
 }
-function openCart(){
- if(!localStorage.getItem("user")){showAlert("Login first");openAuth();return}
- cartModal.style.display="flex";
- let c=JSON.parse(localStorage.getItem(cartKey())||"[]");
- cartItems.innerHTML="";
- c.forEach(i=>cartItems.innerHTML+=`
-  <div class="checkout-box"><span>${i.n}</span><b>$${i.p}</b></div>`);
+function updateCartCount() {
+  if (!localStorage.getItem("user")) {
+    cartCount.textContent = 0;
+    return;
+  }
+  cartCount.textContent = JSON.parse(localStorage.getItem(cartKey()) || "[]")
+    .length;
 }
-function fakeCheckout(){
- cartModal.style.display="none";
- showAlert(Math.random()>.5?"✅ Purchase successful":"❌ Payment failed");
- localStorage.removeItem(cartKey());
- updateCartCount();
+function openCart() {
+  if (!localStorage.getItem("user")) {
+    showAlert("Login first");
+    openAuth();
+    return;
+  }
+  cartModal.style.display = "flex";
+  let c = JSON.parse(localStorage.getItem(cartKey()) || "[]");
+  cartItems.innerHTML = "";
+  c.forEach(
+    (i) =>
+      (cartItems.innerHTML += `<div class="checkout-box"><span>${i.n}</span><b>$${i.p}</b></div>`)
+  );
 }
-function showAlert(t){
- alert.textContent=t;
- alert.classList.add("show");
- setTimeout(()=>alert.classList.remove("show"),3000);
+function fakeCheckout() {
+  cartModal.style.display = "none";
+  showAlert(Math.random() > 0.5 ? "✅ Purchase successful" : "❌ Payment failed");
+  localStorage.removeItem(cartKey());
+  updateCartCount();
 }
+function showAlert(t) {
+  alert.textContent = t;
+  alert.classList.add("show");
+  setTimeout(() => alert.classList.remove("show"), 3000);
+}
+const creditsBtn = document.createElement("button");
+creditsBtn.id = "creditsBtn";
+creditsBtn.textContent = "Credits";
+document.body.appendChild(creditsBtn);
+const creditsModal = document.createElement("div");
+creditsModal.id = "creditsModal";
+creditsModal.style.position = "fixed";
+creditsModal.style.inset = "0";
+creditsModal.style.background = "rgba(0,0,0,0.7)";
+creditsModal.style.display = "none";
+creditsModal.style.alignItems = "center";
+creditsModal.style.justifyContent = "center";
+creditsModal.style.zIndex = "10001";
+creditsModal.style.userSelect = "none";
+const creditsBox = document.createElement("div");
+creditsBox.id = "creditsBox";
+creditsBox.style.background = "linear-gradient(180deg,#2a164f,#160a2b)";
+creditsBox.style.padding = "20px 30px";
+creditsBox.style.borderRadius = "22px";
+creditsBox.style.maxWidth = "320px";
+creditsBox.style.color = "#e0d4ff";
+creditsBox.style.boxShadow = "0 0 30px #b983ff88";
+creditsBox.style.fontWeight = "600";
+creditsBox.style.textAlign = "center";
+creditsBox.style.userSelect = "text";
+creditsBox.innerHTML = `
+  Credits<br>
+  Site builder: <span id="creditSiteBuilder" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Xama</span><br>
+  Owner: <span id="creditCoOwner" contenteditable="true" spellcheck="false" style="outline:none; cursor:text;">Jey/Nico</span><br>
+`;
+const creditsClose = document.createElement("button");
+creditsClose.id = "creditsClose";
+creditsClose.textContent = "Close";
+creditsClose.style.marginTop = "15px";
+creditsClose.style.background = "#b983ff";
+creditsClose.style.border = "none";
+creditsClose.style.borderRadius = "16px";
+creditsClose.style.padding = "8px 16px";
+creditsClose.style.fontWeight = "700";
+creditsClose.style.cursor = "pointer";
+creditsClose.style.color = "#14001f";
+creditsClose.style.boxShadow = "0 0 10px #b983ffcc";
+creditsClose.style.transition = "box-shadow 0.3s ease";
+creditsClose.onmouseenter = () => {
+  creditsClose.style.boxShadow = "0 0 20px 6px #b983ffdd";
+};
+creditsClose.onmouseleave = () => {
+  creditsClose.style.boxShadow = "0 0 10px #b983ffcc";
+};
+creditsClose.onclick = () => {
+  creditsModal.style.display = "none";
+};
+creditsBox.appendChild(creditsClose);
+creditsModal.appendChild(creditsBox);
+document.body.appendChild(creditsModal);
+creditsBtn.style.position = "fixed";
+creditsBtn.style.bottom = "20px";
+creditsBtn.style.right = "20px";
+creditsBtn.style.background = "#b983ff";
+creditsBtn.style.color = "#14001f";
+creditsBtn.style.padding = "10px 20px";
+creditsBtn.style.borderRadius = "24px";
+creditsBtn.style.fontWeight = "700";
+creditsBtn.style.cursor = "pointer";
+creditsBtn.style.boxShadow = "0 0 12px #b983ffcc";
+creditsBtn.style.transition = "box-shadow 0.3s ease";
+creditsBtn.style.zIndex = "10000";
+creditsBtn.onmouseenter = () => {
+  creditsBtn.style.boxShadow = "0 0 20px 6px #b983ffdd";
+};
+creditsBtn.onmouseleave = () => {
+  creditsBtn.style.boxShadow = "0 0 12px #b983ffcc";
+};
+creditsBtn.onclick = () => {
+  creditsModal.style.display = "flex";
+};
+
 </script>
 </body>
 </html>
